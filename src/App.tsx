@@ -1,34 +1,52 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { Session, SupabaseClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
-import { Material } from './database/types/global.types';
 import { Database } from './database/types/database.types';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeMinimal } from '@supabase/auth-ui-shared';
+import Home from './pages/Home';
+import { colors } from './theme/colors';
 
 interface AppProps {
   databaseClient: SupabaseClient<Database>;
 }
 
 function App({ databaseClient }: AppProps) {
-  const [materials, setMaterials] = useState<Material[]>([]);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    async function getMaterials() {
-      const { data } = await databaseClient.from('materials').select();
-      setMaterials(data ?? []);
-    }
+    databaseClient.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
 
-    getMaterials();
-  }, [databaseClient]);
+    const {
+      data: { subscription },
+    } = databaseClient.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
 
-  return (
-    <>
-      <h1 className="text-3xl font-bold">Materials</h1>
-      {materials.map((material) => (
-        <div>
-          <span>{material.name}</span> <span>[{material.category}]</span>
-        </div>
-      ))}
-    </>
-  );
+    return () => subscription.unsubscribe();
+  }, [databaseClient.auth]);
+
+  if (!session) {
+    return (
+      <div className="w-96 m-auto mt-20">
+        <Auth
+          supabaseClient={databaseClient}
+          providers={[]}
+          appearance={{
+            theme: ThemeMinimal,
+            variables: {
+              default: {
+                colors,
+              },
+            },
+          }}
+        />
+      </div>
+    );
+  } else {
+    return <Home databaseClient={databaseClient} />;
+  }
 }
 
 export default App;

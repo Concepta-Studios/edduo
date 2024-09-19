@@ -21,6 +21,7 @@ function App({ databaseClient }: AppProps) {
 
   return (
     <>
+      <h1 className="text-3xl font-bold">Materials</h1>
       {materials.map((material) => (
         <div>
           <span>{material.name}</span> <span>[{material.category}]</span>

@@ -23,8 +23,11 @@ function Home({ databaseClient }: HomeProps) {
 
   return (
     <>
-      <header className="flex justify-between xl-container p-2">
-        <div>EdDuo</div>
+      <header className="flex justify-between xl-container p-2 bg-red-600">
+        <div className="text-4xl font-bold">
+          <span className="text-white">Ed</span>
+          <span className="text-black">Duo</span>
+        </div>
         <div>
           <Input />
         </div>

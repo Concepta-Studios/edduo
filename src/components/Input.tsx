@@ -1,6 +1,6 @@
 export default function Input() {
   return (
-    <div className="relative">
+    <div className="relative min-w-96">
       <label htmlFor="Search" className="sr-only">
         Search
       </label>

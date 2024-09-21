@@ -8,7 +8,7 @@ export default function Input() {
       <input
         type="text"
         id="Search"
-        placeholder="Search for..."
+        placeholder="Search your resources and insprirations here"
         className="w-full rounded-md border border-gray-200 px-2.5 py-2.5 pe-10 shadow-sm sm:text-sm"
       />
 

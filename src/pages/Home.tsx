@@ -24,7 +24,7 @@ function Home({ databaseClient }: HomeProps) {
   return (
     <>
       <Header />
-      <main className="xl-container">
+      <main className="xl-container mt-4 text-center">
         <h1 className="text-3xl font-bold">Materials</h1>
         {materials.map((material) => (
           <div key={material.id}>

@@ -6,6 +6,7 @@ function rgbToHex(r: number, g: number, b: number): string {
 }
 
 export const colors = {
-  brand: rgbToHex(248, 113, 113),
+  // brand: rgbToHex(248, 113, 113),
+  brand: rgbToHex(220, 38, 38),
   brandAccent: rgbToHex(153, 27, 27),
 };

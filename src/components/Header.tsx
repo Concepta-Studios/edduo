@@ -7,7 +7,7 @@ import Input from './Input';
 
 export default function Header() {
   return (
-    <header className="bg-red-600">
+    <header className="bg-brand">
       <div className="flex justify-between xl-container p-2">
         <div className="text-4xl font-bold">
           <span className="text-white">Ed</span>

@@ -3,6 +3,14 @@ import { useEffect, useState } from 'react';
 import { Material } from '../database/types/global.types';
 import { Database } from '../database/types/database.types';
 import Input from '../components/Input';
+// import GlobeIcon from '../icons/GlobeIcon';
+// import ProfileIcon from '../icons/ProfileIcon';
+// import HeartIcon from '../icons/HeartIcon';
+import {
+  HeartIcon,
+  UserCircleIcon,
+  GlobeAltIcon,
+} from '@heroicons/react/24/outline';
 
 interface HomeProps {
   databaseClient: SupabaseClient<Database>;
@@ -31,10 +39,16 @@ function Home({ databaseClient }: HomeProps) {
         <div>
           <Input />
         </div>
-        <div>
-          <div>Profile</div>
-          <div>Collections</div>
-          <div>Language</div>
+        <div className="flex w-40 justify-between items-center">
+          <div>
+            <UserCircleIcon className="size-8" />
+          </div>
+          <div>
+            <HeartIcon className="size-8" />
+          </div>
+          <div>
+            <GlobeAltIcon className="size-8" />
+          </div>
         </div>
       </header>
       <main className="xl-container">

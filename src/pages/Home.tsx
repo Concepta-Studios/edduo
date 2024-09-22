@@ -11,14 +11,25 @@ interface HomeProps {
 function Home({ databaseClient }: HomeProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
 
+  // With the React strict mode in development there'll be two requests fired
+  // because the useEffect will be called twice, so we need to utilize AbortController.
+  // More info: https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
+  // TODO: implement React query for better request's cache handling.
   useEffect(() => {
+    const abortController = new AbortController();
+
     async function getMaterials() {
-      const { data } = await databaseClient.from('materials').select();
+      const { data } = await databaseClient
+        .from('materials')
+        .select()
+        .abortSignal(abortController.signal);
 
       setMaterials(data ?? []);
     }
 
     getMaterials();
+
+    return () => abortController.abort();
   }, [databaseClient]);
 
   return (

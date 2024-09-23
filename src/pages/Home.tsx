@@ -7,6 +7,23 @@ import Button from '../components/Button';
 
 const PAGE_OFFSET = 100;
 
+const getColorByCategory = (category: string) => {
+  switch (category) {
+    case 'Flashcard':
+      return 'orange-500';
+    case 'Worksheet':
+      return 'red-500';
+    case 'Spreadsheet':
+      return 'green-500';
+    case 'Lesson plan':
+      return 'blue-500';
+    case 'Activity':
+      return 'yellow-500';
+    default:
+      return 'black';
+  }
+};
+
 interface HomeProps {
   databaseClient: SupabaseClient<Database>;
 }
@@ -50,17 +67,29 @@ function Home({ databaseClient }: HomeProps) {
   return (
     <>
       <Header />
-      <main className="xl-container mt-4 text-center">
+      <main className="xl-container mt-4 text-center px-4">
         <h1 className="text-3xl font-bold mb-4">Materials</h1>
         <div className="grid grid-cols-4 gap-4">
-          {materials.map((material) => (
-            <div
-              key={material.id}
-              className="border border-brand rounded-xl p-4"
-            >
-              <span>{material.name}</span> <span>[{material.category}]</span>
-            </div>
-          ))}
+          {materials.map((material) => {
+            console.log(getColorByCategory(material.category));
+            return (
+              <div
+                key={material.id}
+                className={`border-${getColorByCategory(
+                  material.category
+                )} border-2 rounded-xl p-4`}
+              >
+                <div
+                  className={`text-sm text-${getColorByCategory(
+                    material.category
+                  )} mb-2`}
+                >
+                  {material.category}
+                </div>
+                <div className="text-gray-700">{material.name}</div>
+              </div>
+            );
+          })}
         </div>
         <div className="p-4">
           <Button className="mr-2" onClick={handlePrev}>

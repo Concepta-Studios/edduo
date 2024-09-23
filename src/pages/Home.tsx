@@ -51,12 +51,17 @@ function Home({ databaseClient }: HomeProps) {
     <>
       <Header />
       <main className="xl-container mt-4 text-center">
-        <h1 className="text-3xl font-bold">Materials</h1>
-        {materials.map((material) => (
-          <div key={material.id}>
-            <span>{material.name}</span> <span>[{material.category}]</span>
-          </div>
-        ))}
+        <h1 className="text-3xl font-bold mb-4">Materials</h1>
+        <div className="grid grid-cols-4 gap-4">
+          {materials.map((material) => (
+            <div
+              key={material.id}
+              className="border border-brand rounded-xl p-4"
+            >
+              <span>{material.name}</span> <span>[{material.category}]</span>
+            </div>
+          ))}
+        </div>
         <div className="p-4">
           <Button className="mr-2" onClick={handlePrev}>
             Prev

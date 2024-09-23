@@ -26,9 +26,10 @@ const getColorByCategory = (category: string) => {
 
 interface HomeProps {
   databaseClient: SupabaseClient<Database>;
+  userId: string;
 }
 
-function Home({ databaseClient }: HomeProps) {
+function Home({ databaseClient, userId }: HomeProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [page, setPage] = useState<number>(0);
 
@@ -64,6 +65,24 @@ function Home({ databaseClient }: HomeProps) {
     setPage(page + 1);
   }
 
+  async function addToBasket(materialId?: number) {
+    if (materialId === undefined || userId === undefined) {
+      console.log("can't add to basket");
+      return;
+    }
+
+    const { error, data } = await databaseClient.from('basket').insert({
+      product_id: materialId,
+      user_id: userId,
+    });
+
+    console.log('successfully added to basket: ', data);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
   return (
     <>
       <Header />
@@ -71,31 +90,40 @@ function Home({ databaseClient }: HomeProps) {
         <h1 className="text-3xl font-bold mb-4">Materials</h1>
         <div className="grid grid-cols-4 gap-4">
           {materials.map((material) => {
-            console.log(getColorByCategory(material.category));
             return (
               <div
                 key={material.id}
                 className={`border-${getColorByCategory(
                   material.category
-                )} border-2 rounded-xl p-4`}
+                )} border-2 rounded-xl p-4 h-56 flex flex-col justify-between`}
               >
-                <div
-                  className={`text-sm text-${getColorByCategory(
-                    material.category
-                  )} mb-2`}
-                >
-                  {material.category}
+                <div>
+                  <div
+                    className={`text-sm text-${getColorByCategory(
+                      material.category
+                    )} mb-2`}
+                  >
+                    {material.category}
+                  </div>
+                  <div className="text-gray-700">{material.name}</div>
                 </div>
-                <div className="text-gray-700">{material.name}</div>
+                <Button
+                  className={`bg-white border-black text-black hover:text-black`}
+                  onClick={() => addToBasket(material.id)}
+                >
+                  Add to basket
+                </Button>
               </div>
             );
           })}
         </div>
         <div className="p-4">
-          <Button className="mr-2" onClick={handlePrev}>
+          <Button className="mr-2 text-white" onClick={handlePrev}>
             Prev
           </Button>
-          <Button onClick={handleNext}>Next</Button>
+          <Button className="text-white" onClick={handleNext}>
+            Next
+          </Button>
         </div>
       </main>
     </>

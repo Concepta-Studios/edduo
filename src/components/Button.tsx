@@ -13,7 +13,7 @@ export default function Button({
 }: ButtonProps): JSX.Element {
   return (
     <a
-      className={'inline-block rounded border border-brand bg-brand px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-brand focus:outline-none focus:ring active:text-brandAccent '.concat(
+      className={'inline-block rounded border border-brand bg-brand px-12 py-3 text-sm font-medium text-black hover:bg-transparent hover:text-brand focus:outline-none focus:ring active:text-brandAccent '.concat(
         className
       )}
       onClick={onClick}

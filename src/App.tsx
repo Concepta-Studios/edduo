@@ -45,7 +45,7 @@ function App({ databaseClient }: AppProps) {
       </div>
     );
   } else {
-    return <Home databaseClient={databaseClient} />;
+    return <Home databaseClient={databaseClient} userId={session.user.id} />;
   }
 }
 

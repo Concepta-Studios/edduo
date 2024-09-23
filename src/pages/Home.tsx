@@ -67,19 +67,42 @@ function Home({ databaseClient, userId }: HomeProps) {
 
   async function addToBasket(materialId?: number) {
     if (materialId === undefined || userId === undefined) {
-      console.log("can't add to basket");
+      console.log('userId and materialId required');
       return;
     }
 
-    const { error, data } = await databaseClient.from('basket').insert({
-      product_id: materialId,
-      user_id: userId,
-    });
+    const { data: basket } = await databaseClient
+      .from('basket')
+      .select()
+      .eq('user_id', userId)
+      .eq('product_id', materialId);
 
-    console.log('successfully added to basket: ', data);
+    if (basket == null || basket.length === 0) {
+      const { error } = await databaseClient.from('basket').insert({
+        product_id: materialId,
+        user_id: userId,
+      });
 
-    if (error) {
-      throw new Error(error.message);
+      console.log('successfully added to basket');
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } else {
+      const { error } = await databaseClient
+        .from('basket')
+        .update({
+          // TODO: Should be a way to make the data retured unique if user_id and product_id is passed
+          // so we can remove this basket[0] step
+          quantity: basket[0].quantity + 1,
+        })
+        .eq('id', basket[0].id);
+
+      console.log('successfully added to basket');
+
+      if (error) {
+        throw new Error(error.message);
+      }
     }
   }
 

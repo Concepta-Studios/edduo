@@ -7,20 +7,37 @@ import Button from '../components/Button';
 
 const PAGE_OFFSET = 100;
 
-const getColorByCategory = (category: string) => {
+const getBorderByCategory = (category: string) => {
   switch (category) {
     case 'Flashcard':
-      return 'orange-500';
+      return 'border-orange-500';
     case 'Worksheet':
-      return 'red-500';
+      return 'border-red-500';
     case 'Spreadsheet':
-      return 'green-500';
+      return 'border-green-500';
     case 'Lesson plan':
-      return 'blue-500';
+      return 'border-blue-500';
     case 'Activity':
-      return 'yellow-500';
+      return 'border-yellow-500';
     default:
-      return 'black';
+      return 'border-black';
+  }
+};
+
+const getTextByCategory = (category: string) => {
+  switch (category) {
+    case 'Flashcard':
+      return 'text-orange-500 hover:text-orange-500';
+    case 'Worksheet':
+      return 'text-red-500 hover:text-red-500';
+    case 'Spreadsheet':
+      return 'text-green-500 hover:text-green-500';
+    case 'Lesson plan':
+      return 'text-blue-500 hover:text-blue-500';
+    case 'Activity':
+      return 'text-yellow-500 hover:text-yellow-500';
+    default:
+      return 'text-black hover:text-black';
   }
 };
 
@@ -113,25 +130,21 @@ function Home({ databaseClient, userId }: HomeProps) {
         <h1 className="text-3xl font-bold mb-4">Materials</h1>
         <div className="grid grid-cols-4 gap-4">
           {materials.map((material) => {
+            const borderColor = getBorderByCategory(material.category);
+            const textColor = getTextByCategory(material.category);
             return (
               <div
                 key={material.id}
-                className={`border-${getColorByCategory(
-                  material.category
-                )} border-2 rounded-xl p-4 h-56 flex flex-col justify-between`}
+                className={`${borderColor} border-2 rounded-xl p-4 h-56 flex flex-col justify-between`}
               >
                 <div>
-                  <div
-                    className={`text-sm text-${getColorByCategory(
-                      material.category
-                    )} mb-2`}
-                  >
+                  <div className={`text-sm ${textColor} mb-2`}>
                     {material.category}
                   </div>
                   <div className="text-gray-700">{material.name}</div>
                 </div>
                 <Button
-                  className={`bg-white border-black text-black hover:text-black`}
+                  className={`bg-white ${borderColor} ${textColor}`}
                   onClick={() => addToBasket(material.id)}
                 >
                   Add to basket
@@ -141,7 +154,7 @@ function Home({ databaseClient, userId }: HomeProps) {
           })}
         </div>
         <div className="p-4">
-          <Button className="mr-2 text-white" onClick={handlePrev}>
+          <Button className={`mr-2 text-white`} onClick={handlePrev}>
             Prev
           </Button>
           <Button className="text-white" onClick={handleNext}>

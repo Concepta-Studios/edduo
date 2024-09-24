@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
-import { Material } from '../database/types/global.types';
+import { Basket, Material } from '../database/types/global.types';
 import { Database } from '../database/types/database.types';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -48,6 +48,7 @@ interface HomeProps {
 
 function Home({ databaseClient, userId }: HomeProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [basket, setBasket] = useState<Basket[]>([]);
   const [page, setPage] = useState<number>(0);
 
   // With the React strict mode in development there'll be two requests fired
@@ -68,10 +69,23 @@ function Home({ databaseClient, userId }: HomeProps) {
       setMaterials(data ?? []);
     }
 
+    async function getBasket() {
+      const { data: basket } = await databaseClient
+        .from('basket')
+        .select()
+        .eq('user_id', userId)
+        .abortSignal(abortController.signal);
+
+      setBasket(basket ?? []);
+    }
+
     getMaterials();
+    getBasket();
 
     return () => abortController.abort();
-  }, [databaseClient, page]);
+  }, [databaseClient, page, userId]);
+
+  console.log('your basket is :', basket);
 
   function handlePrev() {
     setPage(page - 1 < 0 ? 0 : page - 1);
@@ -88,34 +102,48 @@ function Home({ databaseClient, userId }: HomeProps) {
       return;
     }
 
-    const { data: basket } = await databaseClient
-      .from('basket')
-      .select()
-      .eq('user_id', userId)
-      .eq('product_id', materialId);
+    const basketItem = basket.find((item) => item.product_id === materialId);
 
-    if (basket == null || basket.length === 0) {
-      const { error } = await databaseClient.from('basket').insert({
-        product_id: materialId,
-        user_id: userId,
-      });
+    if (basketItem !== undefined) {
+      const { error, data: updatedBasket } = await databaseClient
+        .from('basket')
+        .update({
+          quantity: basketItem.quantity + 1,
+        })
+        .eq('id', basketItem.id)
+        .select();
 
-      console.log('successfully added to basket');
+      if (updatedBasket !== null) {
+        setBasket(
+          basket.map((baksetItem) => {
+            // TODO: can select return not array, but one element??
+            const updatedItem = updatedBasket[0];
+            if (baksetItem.id === updatedItem.id) {
+              return updatedItem;
+            } else {
+              return baksetItem;
+            }
+          })
+        );
+      }
 
       if (error) {
         throw new Error(error.message);
       }
     } else {
-      const { error } = await databaseClient
+      const { error, data: newBasket } = await databaseClient
         .from('basket')
-        .update({
-          // TODO: Should be a way to make the data retured unique if user_id and product_id is passed
-          // so we can remove this basket[0] step
-          quantity: basket[0].quantity + 1,
+        .insert({
+          product_id: materialId,
+          user_id: userId,
         })
-        .eq('id', basket[0].id);
+        .select();
 
-      console.log('successfully added to basket');
+      if (newBasket !== null) {
+        // TODO: can select return not array, but one element??
+        const newItem = newBasket[0];
+        setBasket([...basket, newItem]);
+      }
 
       if (error) {
         throw new Error(error.message);

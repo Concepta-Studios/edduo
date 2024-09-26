@@ -5,14 +5,15 @@ import {
   ShoppingCartIcon,
 } from '@heroicons/react/24/outline';
 import Input from './Input';
-import { Basket } from '../database/types/global.types';
+import { Basket, Category } from '../database/types/global.types';
 import Badge from './Badge';
 
 interface HeaderProps {
   basket: Basket[];
+  categories: Category[];
 }
 
-export default function Header({ basket }: HeaderProps) {
+export default function Header({ basket, categories }: HeaderProps) {
   return (
     <header className="bg-brand">
       <div className="flex justify-between xl-container p-2">
@@ -42,6 +43,11 @@ export default function Header({ basket }: HeaderProps) {
           </div>
         </div>
       </div>
+      <nav className="text-center flex justify-between xl-container w-1/2">
+        {categories.map((category) => (
+          <div className="mr-2 p-2 cursor-pointer">{category.name}</div>
+        ))}
+      </nav>
     </header>
   );
 }

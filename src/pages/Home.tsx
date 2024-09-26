@@ -149,23 +149,54 @@ function Home({ databaseClient, userId }: HomeProps) {
     }
   }
 
-  async function removeFromBasket(materialId: number) {
+  async function removeOneFromBasket(materialId: number) {
     const basketItem = basket.find((item) => item.product_id === materialId);
 
     if (basketItem !== undefined) {
-      const { error, data: updatedBasket } = await databaseClient
-        .from('basket')
-        .delete()
-        .eq('id', basketItem.id)
-        .select();
+      const newQuantity = basketItem.quantity - 1;
 
-      if (updatedBasket !== null) {
-        const updatedItem = updatedBasket[0];
-        setBasket(basket.filter((item) => item.id !== updatedItem.id));
-      }
+      if (newQuantity < 0) return;
 
-      if (error) {
-        throw new Error(error.message);
+      if (newQuantity === 0) {
+        const { error, data: updatedBasket } = await databaseClient
+          .from('basket')
+          .delete()
+          .eq('id', basketItem.id)
+          .select();
+
+        if (updatedBasket !== null) {
+          const updatedItem = updatedBasket[0];
+          setBasket(basket.filter((item) => item.id !== updatedItem.id));
+        }
+
+        if (error) {
+          throw new Error(error.message);
+        }
+      } else {
+        const { error, data: updatedBasket } = await databaseClient
+          .from('basket')
+          .update({
+            quantity: basketItem.quantity - 1,
+          })
+          .eq('id', basketItem.id)
+          .select();
+
+        if (updatedBasket !== null) {
+          setBasket(
+            basket.map((baksetItem) => {
+              const updatedItem = updatedBasket[0];
+              if (baksetItem.id === updatedItem.id) {
+                return updatedItem;
+              } else {
+                return baksetItem;
+              }
+            })
+          );
+        }
+
+        if (error) {
+          throw new Error(error.message);
+        }
       }
     }
   }
@@ -205,7 +236,7 @@ function Home({ databaseClient, userId }: HomeProps) {
                   <Button
                     round
                     className={`bg-white`}
-                    onClick={() => removeFromBasket(material.id)}
+                    onClick={() => removeOneFromBasket(material.id)}
                   >
                     -
                   </Button>

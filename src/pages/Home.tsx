@@ -85,8 +85,6 @@ function Home({ databaseClient, userId }: HomeProps) {
     return () => abortController.abort();
   }, [databaseClient, page, userId]);
 
-  console.log('your basket is :', basket);
-
   function handlePrev() {
     setPage(page - 1 < 0 ? 0 : page - 1);
   }
@@ -151,6 +149,27 @@ function Home({ databaseClient, userId }: HomeProps) {
     }
   }
 
+  async function removeFromBasket(materialId: number) {
+    const basketItem = basket.find((item) => item.product_id === materialId);
+
+    if (basketItem !== undefined) {
+      const { error, data: updatedBasket } = await databaseClient
+        .from('basket')
+        .delete()
+        .eq('id', basketItem.id)
+        .select();
+
+      if (updatedBasket !== null) {
+        const updatedItem = updatedBasket[0];
+        setBasket(basket.filter((item) => item.id !== updatedItem.id));
+      }
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    }
+  }
+
   return (
     <>
       <Header basket={basket} />
@@ -160,10 +179,13 @@ function Home({ databaseClient, userId }: HomeProps) {
           {materials.map((material) => {
             const borderColor = getBorderByCategory(material.category);
             const textColor = getTextByCategory(material.category);
+            const basketItem = basket.find(
+              (item) => item.product_id === material.id
+            );
             return (
               <div
                 key={material.id}
-                className={`${borderColor} border-2 rounded-xl p-4 h-56 flex flex-col justify-between`}
+                className={`${borderColor} border-2 rounded-xl p-4 h-56 flex flex-col justify-between items-center`}
               >
                 <div>
                   <div className={`text-sm ${textColor} mb-2`}>
@@ -171,12 +193,23 @@ function Home({ databaseClient, userId }: HomeProps) {
                   </div>
                   <div className="text-gray-700">{material.name}</div>
                 </div>
-                <Button
-                  className={`bg-white ${borderColor} ${textColor}`}
-                  onClick={() => addToBasket(material.id)}
-                >
-                  Add to basket
-                </Button>
+                <div className="flex w-1/2 justify-between items-center">
+                  <Button
+                    round
+                    className={`bg-white`}
+                    onClick={() => addToBasket(material.id)}
+                  >
+                    +
+                  </Button>
+                  <div>{basketItem?.quantity ?? 0}</div>
+                  <Button
+                    round
+                    className={`bg-white`}
+                    onClick={() => removeFromBasket(material.id)}
+                  >
+                    -
+                  </Button>
+                </div>
               </div>
             );
           })}

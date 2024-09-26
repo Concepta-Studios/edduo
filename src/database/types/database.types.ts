@@ -48,26 +48,55 @@ export type Database = {
           },
         ]
       }
+      categories: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       materials: {
         Row: {
           category: string
+          category_id: number | null
           created_at: string
           id: number
           name: string
         }
         Insert: {
           category: string
+          category_id?: number | null
           created_at?: string
           id?: number
           name: string
         }
         Update: {
           category?: string
+          category_id?: number | null
           created_at?: string
           id?: number
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "materials_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

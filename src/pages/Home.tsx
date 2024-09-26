@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
-import { Basket, Material } from '../database/types/global.types';
+import { Basket, Category, Material } from '../database/types/global.types';
 import { Database } from '../database/types/database.types';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -49,6 +49,7 @@ interface HomeProps {
 function Home({ databaseClient, userId }: HomeProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [basket, setBasket] = useState<Basket[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState<number>(0);
 
   // With the React strict mode in development there'll be two requests fired
@@ -79,8 +80,18 @@ function Home({ databaseClient, userId }: HomeProps) {
       setBasket(basket ?? []);
     }
 
+    async function getCategories() {
+      const { data: categories } = await databaseClient
+        .from('categories')
+        .select()
+        .abortSignal(abortController.signal);
+
+      setCategories(categories ?? []);
+    }
+
     getMaterials();
     getBasket();
+    getCategories();
 
     return () => abortController.abort();
   }, [databaseClient, page, userId]);
@@ -213,6 +224,9 @@ function Home({ databaseClient, userId }: HomeProps) {
             const basketItem = basket.find(
               (item) => item.product_id === material.id
             );
+
+            // console.log(categories);
+
             return (
               <div
                 key={material.id}
@@ -220,7 +234,11 @@ function Home({ databaseClient, userId }: HomeProps) {
               >
                 <div>
                   <div className={`text-sm ${textColor} mb-2`}>
-                    {material.category}
+                    {
+                      categories.find(
+                        (category) => category.id === material.category_id
+                      )?.name
+                    }
                   </div>
                   <div className="text-gray-700">{material.name}</div>
                 </div>

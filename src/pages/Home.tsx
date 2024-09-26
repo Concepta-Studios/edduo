@@ -176,7 +176,7 @@ function Home({ databaseClient, userId }: HomeProps) {
         const { error, data: updatedBasket } = await databaseClient
           .from('basket')
           .update({
-            quantity: basketItem.quantity - 1,
+            quantity: newQuantity,
           })
           .eq('id', basketItem.id)
           .select();
@@ -228,17 +228,17 @@ function Home({ databaseClient, userId }: HomeProps) {
                   <Button
                     round
                     className={`bg-white`}
-                    onClick={() => addToBasket(material.id)}
+                    onClick={() => removeOneFromBasket(material.id)}
                   >
-                    +
+                    -
                   </Button>
                   <div>{basketItem?.quantity ?? 0}</div>
                   <Button
                     round
                     className={`bg-white`}
-                    onClick={() => removeOneFromBasket(material.id)}
+                    onClick={() => addToBasket(material.id)}
                   >
-                    -
+                    +
                   </Button>
                 </div>
               </div>

@@ -153,7 +153,7 @@ function Home({ databaseClient, userId }: HomeProps) {
 
   return (
     <>
-      <Header />
+      <Header basket={basket} />
       <main className="xl-container mt-4 text-center px-4">
         <h1 className="text-3xl font-bold mb-4">Materials</h1>
         <div className="grid grid-cols-4 gap-4">

@@ -2,10 +2,17 @@ import {
   GlobeAltIcon,
   HeartIcon,
   UserCircleIcon,
+  ShoppingCartIcon,
 } from '@heroicons/react/24/outline';
 import Input from './Input';
+import { Basket } from '../database/types/global.types';
+import Badge from './Badge';
 
-export default function Header() {
+interface HeaderProps {
+  basket: Basket[];
+}
+
+export default function Header({ basket }: HeaderProps) {
   return (
     <header className="bg-brand">
       <div className="flex justify-between xl-container p-2">
@@ -25,6 +32,13 @@ export default function Header() {
           </div>
           <div>
             <GlobeAltIcon className="size-8" />
+          </div>
+          <div className="relative">
+            <ShoppingCartIcon className="size-8" />
+            <Badge
+              label={basket.length.toString()}
+              className="absolute -top-2 -right-2"
+            />
           </div>
         </div>
       </div>
